@@ -1,14 +1,103 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" *ngIf="myphoto">
+      <ion-button fill="outline" color="danger" (click)="reset()">
+        Reset
+      </ion-button>
+    </ion-buttons>
     <ion-title>
-      Ionic Blank
+      Klasifikasi Tanaman Toga
     </ion-title>
+    <ion-buttons slot="end" *ngIf="myphoto">
+      <ion-button icon-only color="danger"(click)="clear()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+      <ion-button icon-only color="secondary"(click)="save()">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <div class="ion-padding">
-    The world is your oyster.
-    <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs/">docs</a> will be your guide.</p>
-  </div>
+  <angular-cropper
+    #angularCropper
+    [cropperOptions]="cropperOptions"
+    [imageUrl]="myphoto"
+    *ngIf="myphoto">
+  </angular-cropper>
+  <ion-row *ngIf="myphoto">
+    <ion-col size="4">
+      <ion-button fill="outline" size="small" icon-left color="tertiary" (click)="zoom(true)">
+        <ion-icon name="add"></ion-icon>zoom
+      </ion-button>
+    </ion-col>
+    <ion-col size="4">
+      <ion-button fill="outline" size="small" icon-left color="tertiary" (click)="zoom(false)">
+        <ion-icon name="remove"></ion-icon>zoom
+      </ion-button>
+    </ion-col>
+    <ion-col size="4">
+      <ion-button fill="outline" size="small" icon-left color="tertiary" (click)="rotate()">
+        <ion-icon name="refresh"></ion-icon>90 deg
+      </ion-button>
+    </ion-col>
+    <ion-col size="2">
+      <ion-button fill="clear" (click)="scaleX()">
+       Flip X
+      </ion-button>
+    </ion-col>
+    <ion-col size="2">
+      <ion-button fill="clear" (click)="scaleY()">
+       Flip Y
+      </ion-button>
+    </ion-col>
+     <ion-col size="2">
+      <ion-button fill="clear" icon-only (click)="move(0,-10)">
+        <ion-icon name="arrow-round-up"></ion-icon>
+      </ion-button>
+    </ion-col>
+     <ion-col size="2">
+      <ion-button fill="clear" icon-only (click)="move(0,10)">
+        <ion-icon name="arrow-round-down"></ion-icon>
+      </ion-button>
+    </ion-col>
+     <ion-col size="2">
+      <ion-button fill="clear" icon-only (click)="move(-10,0)">
+        <ion-icon name="arrow-round-back"></ion-icon>
+      </ion-button>
+    </ion-col>
+     <ion-col size="2">
+      <ion-button fill="clear" icon-only (click)="move(10,0)">
+        <ion-icon name="arrow-round-forward"></ion-icon>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-card *ngIf="croppedImage">
+    <ion-card-header>Hasil Crop</ion-card-header>
+    <ion-card-content>
+      <img [src]="croppedImage">
+    <ion-button (click)="imagePredict()" color="success">Prediksi</ion-button>
+    </ion-card-content>
+  </ion-card>
+   <ion-card *ngIf="false">
+    <ion-card-header>Hasil Crop</ion-card-header>
+    <ion-card-content>
+    <p>{{confidence}}</p>
+    </ion-card-content>
+  </ion-card>
+  <!-- <p align="center"><img src="{{ myphoto }}"></p> -->
 </ion-content>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="sheet()" color="secondary">
+      <ion-icon name="camera"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+
+
+
+
+
+
