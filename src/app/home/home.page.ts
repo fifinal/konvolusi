@@ -17,8 +17,8 @@ import {LAYER_CONV, LAYER_FULLY_CONNECTED} from '../util/constant';
 })
 export class HomePage {
 @ViewChild('angularCropper') public angularCropper:CropperComponent
-  myphoto:any;
   cropperOptions:any;
+  myphoto:any=null;
   croppedImage:string;
   scaleValX=1;
   scaleValY=1;
@@ -29,13 +29,14 @@ export class HomePage {
             public actionSheet:ActionSheetController,
             private camera: Camera,
             ) {
+    // this.myphoto="assets/jambu.jpg";
     this.confidence="";
     this.model_test='assets/model.json';
     this.model = undefined;
     this.cropperOptions={
       dragMode:'crop',
       aspectRatio:1,
-      autoCrop:true,
+      autoCrop:false,
       movable:true,
       zoomable:true,
       scalable:true,
@@ -80,14 +81,16 @@ async sheet(){
     this.camera.getPicture(options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
-      this.myphoto = 'data:image/jpeg;base64,' + imageData;
+      this.myphoto="data:image/jpeg;base64,"+imageData;
     }, (err) => {
       // Handle error
     });
   }
   save(){
-    let croppedImgB64Str:any=this.angularCropper.cropper.getCroppedCanvas().toDataURL('image/jpeg',(100/100));
+    let croppedImgB64Str:any=this.angularCropper.cropper.getCroppedCanvas({width:226,height:226}).toDataURL('image/jpeg',(100/100));
+    console.log(this.angularCropper.cropper.getImageData());
     this.croppedImage=croppedImgB64Str;
+    this.reset();
   }
   reset(){
     this.angularCropper.cropper.reset();  
@@ -95,8 +98,8 @@ async sheet(){
   clear(){
     this.angularCropper.cropper.clear();  
   }
-  rotate(){
-    this.angularCropper.cropper.rotate(90);  
+  rotate(deg){
+    this.angularCropper.cropper.rotate(deg);  
   }
   zoom(zoomIn:boolean){
     let factor = zoomIn?0.1:-0.1;
@@ -106,9 +109,15 @@ async sheet(){
     this.scaleValX=this.scaleValX*-1;
     this.angularCropper.cropper.scaleX(this.scaleValX);
   }
+  enable(){
+    this.angularCropper.cropper.enable();
+  }
+  disable(){
+    this.angularCropper.cropper.disable();
+  }
   scaleY(){
     this.scaleValY=this.scaleValY*-1;
-    this.angularCropper.cropper.scaleX(this.scaleValY);
+    this.angularCropper.cropper.scaleY(this.scaleValY);
   }
   move(x,y){
     this.angularCropper.cropper.move(x,y);
@@ -125,7 +134,7 @@ async sheet(){
     this.camera.getPicture(options).then((imageData) => {
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
-      this.myphoto = 'data:image/jpeg;base64,' + imageData;
+      this.myphoto="data:image/jpeg;base64,"+imageData;
     }, (err) => {
       // Handle error
     });
@@ -146,7 +155,6 @@ async sheet(){
       // imageData is either a base64 encoded string or a file URI
       // If it's base64:
       this.croppedImage = 'data:image/jpeg;base64,' + imageData;
-     
     }, (err) => {
       // Handle error
     });
@@ -161,7 +169,8 @@ async sheet(){
 
         ctx.drawImage(img, 0, 0, 100, 100);
         let pixelData = ctx.getImageData(0, 0, 100, 100);
-        this.predict(pixelData);
+        console.log(pixelData);
+        // this.predict(pixelData);
       };
       img.src=this.croppedImage;
   }
@@ -180,7 +189,6 @@ async sheet(){
                 guess = i;
             }
         }
-
         // document.getElementById("guessNumberDiv").innerHTML = ( max > 0.666667 ) ? String(guess) : "?";
         this.confidence= String(Math.min(100, Math.floor(1000 * ( max + 0.1 )) / 10.0)) + "% it's a " + String(guess);
     }
@@ -248,7 +256,6 @@ async sheet(){
  //    }
 
  //    //file transfer action
- //    fileTransfer.upload(this.myphoto, 'http://192.168.1.30/api/upload/uploadFoto.php', options)
  //      .then((data) => {
  //        alert("Success");
  //        loader.dismiss();

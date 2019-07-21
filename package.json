@@ -32,6 +32,7 @@
     "core-js": "^2.5.4",
     "cropperjs": "^1.5.3",
     "ionic-angular": "^3.9.6",
+    "purify-css": "^1.2.5",
     "rxjs": "~6.5.1",
     "rxjs-compat": "^6.5.2",
     "tslib": "^1.9.0",
@@ -87,5 +88,8 @@
       "browser",
       "android"
     ]
+  },
+  "config": {
+    "ionic_sass": "./sass.js"
   }
 }
