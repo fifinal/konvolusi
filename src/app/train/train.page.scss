@@ -1,0 +1,177 @@
+html{
+    background-color: #F2F2F2;
+}
+body{
+    background-color: #fafafa;
+    font-family: sans-serif;
+    width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    border-left: 1px solid grey;
+    border-right: 1px solid grey;
+    box-shadow: 0px 0px 40px 0px rgba(0,0,0,0.75);
+}
+h1{
+    margin: 5px 0;
+}
+header{
+    font-size: small;
+    padding-bottom: 20px;
+}
+footer{
+    text-align: center;
+    font-size: small;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+a, a:visited{
+    color: #2488D9;
+}
+#container{
+    box-sizing: border-box;
+}
+canvas {
+    border: 1px solid black;
+}
+input {
+    border: 1px solid grey;
+    width: 50px;
+}
+input[readonly] {
+    border: 1px solid white;
+}
+.inputBoxes {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.inputBoxesRow {
+    display: flex;
+    flex-direction: row;
+    margin: 2px 0;
+}
+.inputBox{
+    display: inline-block;
+    width: 120px;
+    white-space: nowrap;
+}
+.inputBox label {
+    display: inline-block;
+    width: 60px;
+    text-align: right;
+}
+.buttonBox {
+    width: 100px;
+}
+.layer.inputLayer, .layer.inputLayer.stateNotEditable input{
+    border: 1px solid #5B6F9C;
+    background-color: #acc6ee;
+}
+
+.layer.convLayer, .layer.convLayer.stateNotEditable input{
+    border: 1px solid #679FAD;
+    background-color: #acdbee;
+}
+
+.layer.reluLayer, .layer.reluLayer.stateNotEditable input{
+    border: 1px solid #8C709E;
+    background-color: #d4acee;
+}
+
+.layer.poolLayer, .layer.poolLayer.stateNotEditable input{
+    border: 1px solid #AD7856;
+    background-color: #F7AD83;
+}
+
+.layer.fcLayer, .layer.fcLayer.stateNotEditable input{
+    border: 1px solid #CDD03F;
+    background-color: #edeeac;
+}
+
+.layer.outputLayer, .layer.outputLayer.stateNotEditable input{
+    border: 1px solid #5AAB50;
+    background-color: #b3eeac;
+}
+
+/* button states */
+.stateEditable button.layerOk {
+    display: inline;
+}
+.stateEditable button.layerEdit, .noInputs button.layerEdit{
+    display: none ! important;
+}
+.stateNotEditable button.layerOk {
+    display: none;
+}
+.stateNotEditable button.layerEdit {
+    display: inline;
+}
+.stateNotEditable button.layerEdit {
+    display: inline;
+}
+
+#addButtons{
+    display: flex;
+    flex-direction: column;
+}
+.buttonRow{
+    display: flex;
+    flex-direction: row;
+}
+#addButtons button{
+    flex: 1;
+    margin: 2px 5px;
+    border: 1px solid grey;
+    border-radius: 3px;
+}
+.layer{
+    font-size: 12px;
+    border: 1px solid grey;
+    border-radius: 3px;
+    padding: 5px;
+    margin: 5px 0;
+    min-height: 30px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+.layerLabel {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px;
+}
+
+#stats{
+    border: 1px solid grey;
+    border-radius: 3px;
+    font-family: monospace;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    margin: 5px 0;
+}
+
+#stats pre {
+    margin: 4px 0;
+}
+
+.infoBox{
+    justify-content: center;
+    margin-top: 4px;
+}
+
+#code{
+    padding: 4px;
+    font-family: monospace;
+    height: 200px;
+    overflow-y: scroll;
+    border: 1px solid grey;
+    box-sizing: border-box;
+}
+#code, #stats, canvas, #addButtons button {
+    background-color: white;
+}

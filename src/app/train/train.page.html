@@ -1,9 +1,345 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>train</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>CNN Training</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <ion-row>
+    <ion-col size="6">
+      <ion-card>
+        <ion-card-header color="success">
+          <ion-card-title>Input Dataset</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 1</ion-label>
+              <ion-input [(ngModel)]="labeldaun1" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun1">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun1" type="file" accept="image/*" multiple
+                (change)="loadImage($event,0)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 2</ion-label>
+              <ion-input [(ngModel)]="labeldaun2" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun2">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun2" type="file" accept="image/*" multiple
+                (change)="loadImage($event,1)" />
+            </div>
+          </ion-item>
 
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 3</ion-label>
+              <ion-input [(ngModel)]="labeldaun3" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun3">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun3" type="file" accept="image/*" multiple
+                (change)="loadImage($event,2)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 4</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun4">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun4" type="file" accept="image/*" multiple
+                (change)="loadImage($event,3)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 5</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun5">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun5" type="file" accept="image/*" multiple
+                (change)="loadImage($event,4)" />
+            </div>
+          </ion-item>
+
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 6</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun6">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun6" type="file" accept="image/*" multiple
+                (change)="loadImage($event,5)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 7</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun7">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun7" type="file" accept="image/*" multiple
+                (change)="loadImage($event,6)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 8</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun8">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun8" type="file" accept="image/*" multiple
+                (change)="loadImage($event,7)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 9</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun9">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun9" type="file" accept="image/*" multiple
+                (change)="loadImage($event,8)" />
+            </div>
+          </ion-item>
+          <ion-item>
+            <div slot="start">
+              <ion-label position="floating">Input nama daun toga 10</ion-label>
+              <ion-input [(ngModel)]="labeldaun4" required></ion-input>
+            </div>
+            <div slot="end">
+              <ion-button fill="outline">
+                <ion-icon name="photos" slot="start"></ion-icon>
+                <label for="daun10">pilih gambar</label>
+              </ion-button>
+              <input style="position: absolute;opacity: 0;" id="daun10" type="file" accept="image/*" multiple
+                (change)="loadImage($event,9)" />
+            </div>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col size="6">
+      <ion-card>
+        <ion-card-header color="danger">
+          <ion-card-title>Input Model</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item class="layer outputLayer">
+            <span class="layerLabel">Learning Rate</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="rate">Rate : </label>
+                  <input class="outputCount" type="number" id="rate" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer outputLayer">
+            <span class="layerLabel">Batch Size</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="Batch">Size : </label>
+                  <input class="outputCount" type="number" id="Batch" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer inputLayer noDelete">
+            <span class="layerLabel">Input</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="inputLayerWidth">Width : </label>
+                  <input class="inputWidth" type="number" id="inputLayerWidth" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="inputLayerHeight">Height : </label>
+                  <input class="inputHeight" type="number" id="inputLayerHeight" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="inputLayerDepth">Depth : </label>
+                  <input class="inputDepth" type="number" id="inputLayerDepth" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+
+          </ion-item>
+          <ion-item class="layer convLayer">
+            <span class="layerLabel">Convolution</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="convLayerPatchSize">kernel : </label>
+                  <input class="convPatchSize" type="number" id="convLayerPatchSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerStride">Stride : </label>
+                  <input class="convStride" type="number" id="convLayerStride" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerOutputs">Outputs : </label>
+                  <input class="convOutputs" type="number" id="convLayerOutputs" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer poolLayer">
+            <span class="layerLabel">MaxPool</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="poolLayerSize">Size</label>
+                  <input class="poolSize" type="number" id="poolLayerSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="poolLayerStride">Stride</label>
+                  <input class="poolStride" type="number" id="poolLayerStride" min="1" />
+                </span>
+              </div>
+              <div class="infoBox inputBoxesRow"></div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+
+          <ion-item class="layer convLayer">
+            <span class="layerLabel">Convolution</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="convLayerPatchSize">Kernel : </label>
+                  <input class="convPatchSize" type="number" id="convLayerPatchSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerStride">Stride : </label>
+                  <input class="convStride" type="number" id="convLayerStride" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerOutputs">Outputs : </label>
+                  <input class="convOutputs" type="number" id="convLayerOutputs" min="1" />
+                </span>
+              </div>
+              <div class="inputBoxesRow infoBox"></div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer poolLayer">
+            <span class="layerLabel">MaxPool</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="poolLayerSize">Size : </label>
+                  <input class="poolSize" type="number" id="poolLayerSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="poolLayerStride">Stride : </label>
+                  <input class="poolStride" type="number" id="poolLayerStride" min="1" />
+                </span>
+              </div>
+              <div class="infoBox inputBoxesRow"></div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+
+          <ion-item class="layer fcLayer">
+            <span class="layerLabel">Fully Connected</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="outputLayerCount">Count : </label>
+                  <input class="outputCount" type="number" id="outputLayerCount" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger">ok</ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+          <ion-button (click)="button_click(1)" fill="solid" color="success">{{btn}}</ion-button>
+          <ion-button (click)="download()" fill="solid" color="secondary">Download</ion-button>
+          <ion-button (click)="upload()" fill="solid" color="primary">Upload</ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Train Num: {{example_seen}}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Forward Duration: {{forward_time}}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Backward Duration: {{backward_time}}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Loss: {{mini_batch_loss}}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          Accuracy: {{train_accuracy}}
+        </ion-label>
+      </ion-item>
+
+    </ion-card-content>
+  </ion-card>
+  <!-- <ion-select (ionChange)="checkValue($event)"  interface="popover" 
+  placeholder="Select One" >
+    <ion-select-option *ngFor="let c of currencyData" [value]="c"> 
+   {{c.text}}</ion-select-option>
+</ion-select> -->
 </ion-content>

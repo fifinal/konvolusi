@@ -23,8 +23,22 @@
 <ion-content>
   <ion-card *ngIf="!myphoto">
     <ion-card-content>
-  <img src="assets/no_photo.png" width="100%">
-  <ion-fab horizontal="end" vertical="top" slot="fixed">
+      <ion-list>
+        <ion-list-header>Single Selection</ion-list-header>
+        <ion-item>
+          <ion-label>Hair Color</ion-label>
+          <!-- <ion-select name="periodSelected" ionChange="onChange($event)" > -->
+          <ion-select value="brown" okText="Okay" cancelText="Dismiss">
+            <ion-select-option value="brown">Brown</ion-select-option>
+            <ion-select-option value="blonde">Blonde</ion-select-option>
+            <ion-select-option value="black">Black</ion-select-option>
+            <ion-select-option value="red">Red</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+      </ion-list>
+      <img src="assets/no_photo.png" width="100%">
+      <ion-fab horizontal="end" vertical="top" slot="fixed">
         <ion-fab-button color="light">
           <ion-icon name="logo-buffer"></ion-icon>
         </ion-fab-button>
