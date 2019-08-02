@@ -19,7 +19,7 @@ class ConvLayer extends Layer {
 	public pad_x: any;
 	public pad_y: any;
 	public kernel: any;
-	public biases: any;
+	public biases: Float32Array;
 	public kernel_grad: any;
 	public biases_grad: any;
 	public back_error: any;

@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ACTIVATION_SOFTMAX, LAYER_CONV, LAYER_FULLY_CONNECTED, LAYER_INPUT, LAYER_MAXPOOL } from '../util/constant';
 import PureCnn from '../model/model';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
+import { Observable } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+
+export interface Item { id: string; name: string; }
+
 // import {LayerComponent} from '../layer/layer.component';
 
 @Component({
@@ -9,19 +16,25 @@ import PureCnn from '../model/model';
   styleUrls: ['./train.page.scss'],
 })
 export class TrainPage implements OnInit {
+  private itemsCollection: AngularFirestoreCollection;
+  task: AngularFireUploadTask;
+  uploadPercent: Observable<number>;
+  downloadURL: Observable<string>;
+  items: Observable<Item[]>;
+  public inputModel: any;
   public daun1: any;
   public btn: string;
-
-  public labelDaun1: string;
-  public labelDaun2: string;
-  public labelDaun3: string;
-  public labelDaun4: string;
-  public labelDaun5: string;
-  public labelDaun6: string;
-  public labelDaun7: string;
-  public labelDaun8: string;
-  public labelDaun9: string;
-  public labelDaun10: string;
+  public nama_file_bobot: string;
+  public labeldaun1: string;
+  public labeldaun2: string;
+  public labeldaun3: string;
+  public labeldaun4: string;
+  public labeldaun5: string;
+  public labeldaun6: string;
+  public labeldaun7: string;
+  public labeldaun8: string;
+  public labeldaun9: string;
+  public labeldaun10: string;
 
   public input: number;
   public trainData: any[];
@@ -46,7 +59,24 @@ export class TrainPage implements OnInit {
 
   public model: any;
   public jsonObject: any;
-  constructor() {
+  constructor(private db: AngularFirestore, private storage: AngularFireStorage) {
+    this.inputModel = {
+      rate: null,
+      batch: null,
+      inputLayerWidth: null,
+      inputLayerHeight: null,
+      inputLayerDepth: null,
+      convLayerPatchSize: null,
+      convLayerOutputs: null,
+      poolLayerSize: null,
+      convLayerPatchSize2: null,
+      convLayerStride2: null,
+      convLayerOutputs2: null,
+      poolLayerSize2: null,
+      poolLayerStride2: null,
+      outputLayerCount: null
+    }
+    this.nama_file_bobot = "model";
     this.btn = "Train";
     this.trainNum = 0;
     this.mini_batch_size = 20;
@@ -62,7 +92,7 @@ export class TrainPage implements OnInit {
 
     this.trainData = new Array();  // new Image/ img src 
     this.validasiData = new Array();  // new Image/ img src 
-    this.input = 226;
+    this.input = 64;
 
     this.forward_time = 0;
     this.backward_time = 0;
@@ -72,58 +102,54 @@ export class TrainPage implements OnInit {
     this.datas = new Array(10);
   }
 
-  init() {
-
-  }
-
   initialize_network() {
     this.model = new PureCnn(this.mini_batch_size);
-    this.model.add_layer({
-      name: "image",
-      type: LAYER_INPUT,
-      width: this.input,
-      height: this.input,
-      depth: 3
-    });
-    this.model.add_layer({
-      name: "conv1",
-      type: LAYER_CONV,
-      units: 10,
-      kernel_width: 5,
-      kernel_height: 5,
-      pool_stride_x: 1,
-      pool_stride_y: 1,
-      padding: false
-    });
-    this.model.add_layer({
-      name: "pool1",
-      type: LAYER_MAXPOOL,
-      pool_width: 2,
-      pool_height: 2,
-      pool_stride_x: 2,
-      pool_stride_y: 2
-    });
-    this.model.add_layer({
-      name: "conv2",
-      type: LAYER_CONV,
-      units: 20,
-      kernel_width: 5,
-      kernel_height: 5,
-      pool_stride_x: 1,
-      pool_stride_y: 1,
-      padding: false
-    });
-    this.model.add_layer({
-      name: "pool2",
-      type: LAYER_MAXPOOL,
-      pool_width: 2,
-      pool_height: 2,
-      pool_stride_x: 2,
-      pool_stride_y: 2
-    });
-    this.model.add_layer({ name: "out", type: LAYER_FULLY_CONNECTED, units: 10, activation: ACTIVATION_SOFTMAX });
+    // this.model.add_layer({
+    //   name: "image",
+    //   type: LAYER_INPUT,
+    //   width: this.input,
+    //   height: this.input,
+    //   depth: 3
+    // });
+    // this.model.add_layer({
+    //   name: "conv1",
+    //   type: LAYER_CONV,
+    //   units: 10,
+    //   kernel_width: 5,
+    //   kernel_height: 5,
+    //   pool_stride_x: 1,
+    //   pool_stride_y: 1,
+    //   padding: false
+    // });
+    // this.model.add_layer({
+    //   name: "pool1",
+    //   type: LAYER_MAXPOOL,
+    //   pool_width: 2,
+    //   pool_height: 2,
+    //   pool_stride_x: 2,
+    //   pool_stride_y: 2
+    // });
+    // this.model.add_layer({
+    //   name: "conv2",
+    //   type: LAYER_CONV,
+    //   units: 20,
+    //   kernel_width: 3,
+    //   kernel_height: 3,
+    //   pool_stride_x: 1,
+    //   pool_stride_y: 1,
+    //   padding: false
+    // });
+    // this.model.add_layer({
+    //   name: "pool2",
+    //   type: LAYER_MAXPOOL,
+    //   pool_width: 2,
+    //   pool_height: 2,
+    //   pool_stride_x: 2,
+    //   pool_stride_y: 2
+    // });
+    // this.model.add_layer({ name: "out", type: LAYER_FULLY_CONNECTED, units: 10, activation: ACTIVATION_SOFTMAX });
 
-    this.model.set_learning_rate(0.01);
+    // this.model.set_learning_rate(0.01);
     this.model.set_momentum(0.9);
     this.model.set_l2(0.0);
   }
@@ -163,13 +189,16 @@ export class TrainPage implements OnInit {
       //  =======================
 
       this.epoch++;
-      if (!this.paused) {
+      if (!this.paused && (Math.floor(1000.0 * accuracy) / 10.0) <= 90) {
         this.timeoutID = true;
         setTimeout(() => {
           this.train();
         }, 50);
       }
-      else console.log("Pausing after iteration " + this.iter);
+      else {
+        console.log("Pausing after iteration " + this.iter);
+        this.save_model();
+      }
     }
     else {
       this.running = this.paused = false;
@@ -230,8 +259,11 @@ export class TrainPage implements OnInit {
         break;
       case LAYER_CONV:
         let weightConv = new Array(layer.units);
+        let biasConv = new Array(layer.units);
         for (let j = 0; j < layer.units; j++) {
-          weightConv = layer.kernel[j].get_value();
+          weightConv[j] = layer.kernel[j].get_value_array();
+          biasConv[j] = layer.biases[j];
+
         }
         return {
           name: layer.name,
@@ -244,7 +276,7 @@ export class TrainPage implements OnInit {
           kernel_stride_y: layer.kernel_stride_y,
           pad_x: layer.pad_x,
           pad_y: layer.pad_y,
-          biases: layer.biases
+          biases: biasConv
         }
         break;
       case LAYER_MAXPOOL:
@@ -259,8 +291,10 @@ export class TrainPage implements OnInit {
         break;
       case LAYER_FULLY_CONNECTED:
         let weightFC = new Array(layer.units);
+        let biasFC = new Array(layer.units);
         for (let j = 0; j < layer.units; j++) {
-          weightFC = layer.weight[j].get_value();
+          weightFC[j] = layer.weight[j].get_value_array();
+          biasFC[j] = layer.biases[j];
         }
         return {
           name: layer.name,
@@ -268,7 +302,7 @@ export class TrainPage implements OnInit {
           units: layer.units,
           weight: weightFC,
           activation: layer.activation,
-          biases: layer.biases,
+          biases: biasFC,
         }
         break;
     }
@@ -284,7 +318,8 @@ export class TrainPage implements OnInit {
       learning_rate: this.model.learning_rate,
       l2: this.model.l2,
     }
-    setTimeout(() => this.jsonObject = model_dict, 1000);
+    this.jsonObject = model_dict;
+    console.log(model_dict);
   }
 
   randomTrainData() {
@@ -296,31 +331,56 @@ export class TrainPage implements OnInit {
     }
     this.trainData = arr;
   }
+
   upload() {
+    this.itemsCollection = this.db.collection('items');
+    const id = this.db.createId();
+    let metadata = {
+      contentType: 'application/json',
+    };
+
+    if (this.jsonObject) {
+      let blob = new Blob([JSON.stringify(this.jsonObject, undefined, 4)], { type: metadata.contentType });
+      const filePath = this.nama_file_bobot + '.json';
+      const ref = this.storage.ref(filePath);
+      this.task = ref.put(blob, metadata);
+      // this.uploadPercent = this.task.percentageChanges();
+      // get notified when the download URL is available
+      // The file's download URL
+      console.log("upload")
+      this.task.snapshotChanges().pipe(
+        finalize(() => {
+          ref.getDownloadURL().toPromise().then((url) => {
+            this.itemsCollection.doc(id).set({ nama: this.nama_file_bobot, url: url });
+          }).catch(err => { console.log(err) });
+        })
+      ).subscribe();
+
+    }
 
   }
 
   loadImage(e: any, n: number) {
     switch (n) {
-      case 0: this.datas[n] = this.labelDaun1;
+      case 0: this.datas[n] = this.labeldaun1;
         break;
-      case 1: this.datas[n] = this.labelDaun2;
+      case 1: this.datas[n] = this.labeldaun2;
         break;
-      case 2: this.datas[n] = this.labelDaun3;
+      case 2: this.datas[n] = this.labeldaun3;
         break;
-      case 3: this.datas[n] = this.labelDaun4;
+      case 3: this.datas[n] = this.labeldaun4;
         break;
-      case 4: this.datas[n] = this.labelDaun5;
+      case 4: this.datas[n] = this.labeldaun5;
         break;
-      case 5: this.datas[n] = this.labelDaun6;
+      case 5: this.datas[n] = this.labeldaun6;
         break;
-      case 6: this.datas[n] = this.labelDaun7;
+      case 6: this.datas[n] = this.labeldaun7;
         break;
-      case 7: this.datas[n] = this.labelDaun8;
+      case 7: this.datas[n] = this.labeldaun8;
         break;
-      case 8: this.datas[n] = this.labelDaun9;
+      case 8: this.datas[n] = this.labeldaun9;
         break;
-      case 9: this.datas[n] = this.labelDaun10;
+      case 9: this.datas[n] = this.labeldaun10;
         break;
 
     }
@@ -352,8 +412,8 @@ export class TrainPage implements OnInit {
           // let gambar=canvas.toDataURL("image/jpeg",1);
           // const a = document.createElement('a');
           // a.setAttribute('href', gambar);
-          // a.setAttribute('download', this.labelDaun1+i);
-          // a.innerHTML=this.labelDaun1+i;
+          // a.setAttribute('download', this.labeldaun1+i);
+          // a.innerHTML=this.labeldaun1+i;
           // a.click();
           // document.body.append(a);
 
@@ -398,7 +458,7 @@ export class TrainPage implements OnInit {
         else if (this.running && !this.paused) {
           this.paused = true;
           this.btn = "Resume";
-          this.save_model();
+          // this.save_model();
         }
         else if (this.running && this.paused && !this.testing) {
           this.paused = false;
@@ -406,7 +466,7 @@ export class TrainPage implements OnInit {
 
           if (this.timeoutID === false) {
             this.train();
-            this.save_model();
+            // this.save_model();
           }
         }
         break;
@@ -415,30 +475,147 @@ export class TrainPage implements OnInit {
         break;
     }
   }
+  rgbToHsl(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h, s, l = (max + min) / 2;
 
-  onTrainImageLoad(i, e) {
-    // let files=e.target.files;
+    if (max == min) {
+      h = s = 0; // achromatic
+    } else {
+      var d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+    return [h, s, l];
   }
-  save(filename, data) {
 
-    if (!data) {
-      alert('error : No data')
-      return;
+  thresholdHsl(pixels, lower, upper) {
+    var d = pixels.data;
+    var createTest = function (lower, upper) {
+      return lower <= upper
+        ? function (v) { return lower <= v && v <= upper; }
+        : function (v) { return lower <= v || v <= upper; };
+    }
+    var h = createTest(lower[0], upper[0]);
+    var s = createTest(lower[1], upper[1]);
+    var l = createTest(lower[2], upper[2]);
+    for (var i = 0; i < d.length; i += 4) {
+      var hsl = this.rgbToHsl(d[i], d[i + 1], d[i + 2]);
+      if (!h(hsl[0]) || !s(hsl[1]) || !l(hsl[2])) {
+        d[i + 3] = 0;
+      }
+    }
+  }
+
+  //  var img = new Image();
+
+  //  img.onload = function() {
+  //    var canvas = document.getElementById('myCanvas');
+  //    var ctx    = canvas.getContext('2d');
+  //    ctx.drawImage(img,0,0);
+  //    var pixels = ctx.getImageData(0,0,canvas.width,canvas.height);
+  //    thresholdHsl(pixels,[0,0.12,0],[1,1,1]);
+  //    ctx.putImageData(pixels, 0, 0);
+  //  };
+  //  img.src = 'Hand.png';
+  setRate() {
+
+    if (this.inputModel.rate != null) {
+      this.model.set_learning_rate(this.inputModel.rate);
+
+    }
+  }
+  setInput() {
+    if (this.inputModel.inputLayerWidth != null &&
+      this.inputModel.inputLayerHeight != null &&
+      this.inputModel.inputLayerDepth != null) {
+      this.model.add_layer({
+        name: "image",
+        type: LAYER_INPUT,
+        width: this.inputModel.inputLayerWidth,
+        height: this.inputModel.inputLayerHeight,
+        depth: this.inputModel.inputLayerDepth
+      });
+    }
+  }
+  setBatch() {
+    if (this.inputModel.batch != null) {
+      this.mini_batch_size =this.inputModel.batch;
     }
 
-    if (typeof data === "object") {
-      data = JSON.stringify(data, undefined, 4)
+  }
+  setConv(no) {
+    if (no == 1 &&
+      this.inputModel.convLayerPatchSize != null &&
+      this.inputModel.convLayerOutputs != null) {
+      this.model.add_layer({
+        name: "conv1",
+        type: LAYER_CONV,
+        units: this.inputModel.convLayerOutputs,
+        kernel_width: this.inputModel.convLayerPatchSize,
+        kernel_height: this.inputModel.convLayerPatchSize,
+        pool_stride_x: 1,
+        pool_stride_y: 1,
+        padding: false
+      });
+    }
+    else if (no == 2 &&
+      this.inputModel.convLayerPatchSize2 != null &&
+      this.inputModel.convLayerOutputs2 != null) {
+      this.model.add_layer({
+        name: "conv2",
+        type: LAYER_CONV,
+        units: this.inputModel.convLayerOutputs2,
+        kernel_width: this.inputModel.convLayerPatchSize2,
+        kernel_height: this.inputModel.convLayerPatchSize2,
+        pool_stride_x: 1,
+        pool_stride_y: 1,
+        padding: false
+      });
     }
 
-    var blob = new Blob([data], { type: 'text/json' }),
-      e = document.createEvent('MouseEvents'),
-      a = document.createElement('a')
-
-    a.download = filename
-    a.href = window.URL.createObjectURL(blob)
-    a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
-    e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-    a.dispatchEvent(e)
+  }
+  setMaxPool(no) {
+    if (no == 1 &&
+      this.inputModel.poolLayerSize != null &&
+      this.inputModel.poolLayerStride != null) {
+      this.model.add_layer({
+        name: "pool1",
+        type: LAYER_MAXPOOL,
+        pool_width: this.inputModel.poolLayerSize,
+        pool_height: this.inputModel.poolLayerSize,
+        pool_stride_x: this.inputModel.poolLayerStride,
+        pool_stride_y: this.inputModel.poolLayerStride
+      });
+    }
+    else if (no == 2 &&
+      this.inputModel.poolLayerSize2 != null &&
+      this.inputModel.poolLayerStride2 != null) {
+      this.model.add_layer({
+        name: "pool2",
+        type: LAYER_MAXPOOL,
+        pool_width: this.inputModel.poolLayerSize2,
+        pool_height: this.inputModel.poolLayerSize2,
+        pool_stride_x: this.inputModel.poolLayerStride2,
+        pool_stride_y: this.inputModel.poolLayerStride2
+      });
+    }
+  }
+  setFC() {
+    if (this.inputModel.outputLayerCount != null) {
+      this.model.add_layer({
+        name: "out",
+        type: LAYER_FULLY_CONNECTED,
+        units: this.inputModel.outputLayerCount,
+        activation: ACTIVATION_SOFTMAX
+      });
+    }
   }
   ngOnInit() {
     // this.init();

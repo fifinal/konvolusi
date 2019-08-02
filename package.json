@@ -1,5 +1,5 @@
 {
-  "name": "kamera",
+  "name": "Toga",
   "version": "0.0.1",
   "author": "Ionic Framework",
   "homepage": "https://ionicframework.com/",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@angular/common": "^7.2.2",
     "@angular/core": "^7.2.2",
+    "@angular/fire": "^5.2.1",
     "@angular/forms": "^7.2.2",
     "@angular/http": "^7.2.2",
     "@angular/platform-browser": "^7.2.2",
@@ -31,6 +32,7 @@
     "cordova-plugin-camera": "^4.0.3",
     "core-js": "^2.5.4",
     "cropperjs": "^1.5.3",
+    "firebase": "^6.3.2",
     "ionic-angular": "^3.9.6",
     "purify-css": "^1.2.5",
     "rxjs": "~6.5.1",
