@@ -15,6 +15,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule, StorageBucket } from '@angular/fire/storage';
 import { environment } from '../environments/environment';
+import { IonicStorageModule } from '@ionic/storage';
 // import { FileTransfer } from '@ionic-native/file-transfer';
 // import { File } from '@ionic-native/file';
 @NgModule({
@@ -23,6 +24,7 @@ import { environment } from '../environments/environment';
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
     AngularCropperjsModule,
     AngularFireModule.initializeApp(environment.firebase, "conv-toga"),

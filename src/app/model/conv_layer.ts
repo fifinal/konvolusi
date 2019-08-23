@@ -1,4 +1,4 @@
-import {Layer,LayerDict} from './layer'
+import { Layer, LayerDict } from './layer'
 import Mat from '../util/mat'
 import Shape from '../util/mat_shape'
 
@@ -90,8 +90,8 @@ class ConvLayer extends Layer {
 							for (let ker_x = 0; ker_x < this.kernel_width; ker_x++) {
 								let input_x = out_x + ker_x;
 								for (let ker_d = 0; ker_d < this.kernel_depth; ker_d++) {
-									let kernel = this.kernel[j].get_value_by_coordinate(ker_x, ker_y, ker_d)* 											this.input[i].get_value_by_coordinate(input_x, input_y, ker_d)
-									this.output[i].add_value_by_coordinate(out_x,out_y,j,kernel);
+									let kernel = this.kernel[j].get_value_by_coordinate(ker_x, ker_y, ker_d) * this.input[i].get_value_by_coordinate(input_x, input_y, ker_d)
+									this.output[i].add_value_by_coordinate(out_x, out_y, j, kernel);
 								}
 							}
 						}
@@ -118,10 +118,10 @@ class ConvLayer extends Layer {
 				for (let out_y = 0; out_y < this.output_shape.height; out_y++) {
 					for (let out_x = 0; out_x < this.output_shape.width; out_x++) {
 						let error_delta = next_layer.back_error[i].get_value_by_coordinate(out_x, out_y, j) *
-						((this.output[i].get_value_by_coordinate(out_x, out_y, j) > 0) ? 1 : 0);
+							((this.output[i].get_value_by_coordinate(out_x, out_y, j) > 0) ? 1 : 0);
 						let error_delta_with_learning_rate = -this.network.batch_learning_rate * error_delta;
 						this.biases_grad[j] += error_delta_with_learning_rate;
-						
+
 						for (let ker_d = 0; ker_d < this.kernel_depth; ++ker_d) {
 							for (let ker_y = 0; ker_y < this.kernel_height; ++ker_y) {
 								let input_y = ker_y + out_y;
@@ -151,15 +151,15 @@ class ConvLayer extends Layer {
 	}
 }
 
-interface ConvLayerDict extends LayerDict{
-	units:any;
-	weight:any[];
-	kernel_width:any;
-	kernel_height:any;
-	kernel_stride_x:any;
-	kernel_stride_y:any;
-	pad_x:any;
-	pad_y:any;
-	biases:any;
+interface ConvLayerDict extends LayerDict {
+	units: any;
+	weight: any[];
+	kernel_width: any;
+	kernel_height: any;
+	kernel_stride_x: any;
+	kernel_stride_y: any;
+	pad_x: any;
+	pad_y: any;
+	biases: any;
 }
-export{ConvLayer,ConvLayerDict};
+export { ConvLayer, ConvLayerDict };

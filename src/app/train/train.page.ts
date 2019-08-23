@@ -5,7 +5,8 @@ import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/fire
 import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-
+import { Chart } from 'chart.js';
+import ImageProcess from '../praproses/ImageProcess';
 export interface Item { id: string; name: string; }
 
 // import {LayerComponent} from '../layer/layer.component';
@@ -57,9 +58,25 @@ export class TrainPage implements OnInit {
   public testing: boolean;
   public timeoutID: boolean;
 
+  public in: boolean;
+  public k1: boolean;
+  public p1: boolean;
+  public k2: boolean;
+  public p2: boolean;
+  public f: boolean;
+
   public model: any;
   public jsonObject: any;
+  configAkurasi: { type: string; data: { labels: string[]; datasets: { label: string; data: number[]; fill: boolean; lineTension: number; borderColor: string; borderWidth: number; }[]; }; options: { title: { text: string; display: boolean; }; scales: any }; };
+  configLoss: { type: string; data: { labels: any[]; datasets: { label: string; data: any[]; fill: boolean; lineTension: number; borderColor: string; borderWidth: number; }[]; }; options: { title: { text: string; display: boolean; }; scales: any }; };
   constructor(private db: AngularFirestore, private storage: AngularFireStorage) {
+    this.in = false;
+    this.k1 = false;
+    this.p1 = false;
+    this.k2 = false;
+    this.p2 = false;
+    this.f = false;
+
     this.inputModel = {
       rate: null,
       batch: null,
@@ -75,6 +92,62 @@ export class TrainPage implements OnInit {
       poolLayerSize2: null,
       poolLayerStride2: null,
       outputLayerCount: null
+    }
+    this.configAkurasi = {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Akurasi',
+            data: [],
+            fill: false,
+            lineTension: 0.2,
+            borderColor: "green",
+            borderWidth: 1
+          }]
+      },
+      options: {
+        title: {
+          text: "Line Chart",
+          display: true
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
+    }
+    this.configLoss = {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Loss',
+            data: [],
+            fill: false,
+            lineTension: 0.2,
+            borderColor: "red",
+            borderWidth: 1
+          }]
+      },
+      options: {
+        title: {
+          text: "Line Chart",
+          display: true
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        }
+      }
     }
     this.nama_file_bobot = "model";
     this.btn = "Train";
@@ -184,18 +257,26 @@ export class TrainPage implements OnInit {
 
       //  ===== tampilan UI =====
       let accuracy = this.validate_accuracy();
-      this.mini_batch_loss = (Math.floor(1000.0 * this.model.training_error) / 1000.0) + "";
+      this.mini_batch_loss = (Math.floor(1000.0 * this.model.training_error) / 1000.0);
       this.train_accuracy = (Math.floor(1000.0 * accuracy) / 10.0) + "%";
       //  =======================
+      this.configAkurasi.data.labels.push(String(this.example_seen / this.mini_batch_size));
+      this.configAkurasi.data.datasets[0].data.push((Math.floor(1000.0 * accuracy) / 10.0));
+
+      this.configLoss.data.labels.push(String(this.example_seen / this.mini_batch_size));
+      this.configLoss.data.datasets[0].data.push(String(this.mini_batch_loss));
 
       this.epoch++;
       if (!this.paused && (Math.floor(1000.0 * accuracy) / 10.0) <= 90) {
+        // if (!this.paused) {
         this.timeoutID = true;
         setTimeout(() => {
           this.train();
-        }, 50);
+        }, 1000);
       }
       else {
+        new Chart('akurasi', this.configAkurasi);
+        new Chart('loss', this.configLoss);
         console.log("Pausing after iteration " + this.iter);
         this.save_model();
       }
@@ -203,6 +284,8 @@ export class TrainPage implements OnInit {
     else {
       this.running = this.paused = false;
       this.iter = 0;
+      new Chart('akurasi', this.configAkurasi);
+      new Chart('loss', this.configLoss);
       this.save_model();
       this.btn = "Keep Training";
       this.train_accuracy = (Math.floor(1000.0 * this.validate_accuracy()) / 10.0) + "%";
@@ -399,23 +482,24 @@ export class TrainPage implements OnInit {
           canvas.width = this.input;
           canvas.height = this.input;
           let ctx = canvas.getContext('2d');
+          let sizeDraw = Math.floor(this.input + (this.input / 4));
+          ctx.drawImage(img, 0, 0, sizeDraw, sizeDraw);
+          let augmentasi = [[0.5, 0.5], [0, 0], [1, 0], [0, 1], [1, 1]];
 
-          ctx.drawImage(img, 0, 0, this.input, this.input);
-          let pixelData = ctx.getImageData(0, 0, this.input, this.input);
-          if (i >= Math.floor(filesImage.length * (4 / 5))) {
-            this.validasiData.push({ label: n, image: pixelData });
-          } else {
-            this.trainData.push({ label: n, image: pixelData });
+          for (let a = 0; a < augmentasi.length; a++) {
+            let x = Math.floor(augmentasi[a][0] * (this.input / 4));
+            let y = Math.floor(augmentasi[a][1] * (this.input / 4));
+            let pixelData = ctx.getImageData(x, y, this.input, this.input);
+            let improc = new ImageProcess(pixelData);
+            // improc.threshold(160);
+            improc.sharpen(0, ctx);
+            improc.contrastStretching();
+            if (i >= Math.floor(filesImage.length * (4 / 5))) {
+              this.validasiData.push({ label: n, image: improc.pixels });
+            } else {
+              this.trainData.push({ label: n, image: improc.pixels });
+            }
           }
-          // ctx.putImageData(pixelData,0,0);
-
-          // let gambar=canvas.toDataURL("image/jpeg",1);
-          // const a = document.createElement('a');
-          // a.setAttribute('href', gambar);
-          // a.setAttribute('download', this.labeldaun1+i);
-          // a.innerHTML=this.labeldaun1+i;
-          // a.click();
-          // document.body.append(a);
 
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           progress += Math.ceil(100 / 30);
@@ -475,61 +559,10 @@ export class TrainPage implements OnInit {
         break;
     }
   }
-  rgbToHsl(r, g, b) {
-    r /= 255, g /= 255, b /= 255;
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    var h, s, l = (max + min) / 2;
 
-    if (max == min) {
-      h = s = 0; // achromatic
-    } else {
-      var d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
-    }
-    return [h, s, l];
-  }
-
-  thresholdHsl(pixels, lower, upper) {
-    var d = pixels.data;
-    var createTest = function (lower, upper) {
-      return lower <= upper
-        ? function (v) { return lower <= v && v <= upper; }
-        : function (v) { return lower <= v || v <= upper; };
-    }
-    var h = createTest(lower[0], upper[0]);
-    var s = createTest(lower[1], upper[1]);
-    var l = createTest(lower[2], upper[2]);
-    for (var i = 0; i < d.length; i += 4) {
-      var hsl = this.rgbToHsl(d[i], d[i + 1], d[i + 2]);
-      if (!h(hsl[0]) || !s(hsl[1]) || !l(hsl[2])) {
-        d[i + 3] = 0;
-      }
-    }
-  }
-
-  //  var img = new Image();
-
-  //  img.onload = function() {
-  //    var canvas = document.getElementById('myCanvas');
-  //    var ctx    = canvas.getContext('2d');
-  //    ctx.drawImage(img,0,0);
-  //    var pixels = ctx.getImageData(0,0,canvas.width,canvas.height);
-  //    thresholdHsl(pixels,[0,0.12,0],[1,1,1]);
-  //    ctx.putImageData(pixels, 0, 0);
-  //  };
-  //  img.src = 'Hand.png';
   setRate() {
-
-    if (this.inputModel.rate != null) {
-      this.model.set_learning_rate(this.inputModel.rate);
-
-    }
+    if (this.inputModel.rate != null) this.model.set_learning_rate(this.inputModel.rate);
+    else alert("tidak boleh kosong")
   }
   setInput() {
     if (this.inputModel.inputLayerWidth != null &&
@@ -542,12 +575,12 @@ export class TrainPage implements OnInit {
         height: this.inputModel.inputLayerHeight,
         depth: this.inputModel.inputLayerDepth
       });
-    }
+      this.in = true;
+    } else { alert("tidak boleh kosong") }
   }
   setBatch() {
-    if (this.inputModel.batch != null) {
-      this.mini_batch_size =this.inputModel.batch;
-    }
+    if (this.inputModel.batch != null) this.mini_batch_size = this.inputModel.batch;
+    else alert("tidak boleh kosong")
 
   }
   setConv(no) {
@@ -564,6 +597,7 @@ export class TrainPage implements OnInit {
         pool_stride_y: 1,
         padding: false
       });
+      this.k1 = true;
     }
     else if (no == 2 &&
       this.inputModel.convLayerPatchSize2 != null &&
@@ -578,7 +612,8 @@ export class TrainPage implements OnInit {
         pool_stride_y: 1,
         padding: false
       });
-    }
+      this.k2 = true;
+    } else { alert("tidak boleh kosong") }
 
   }
   setMaxPool(no) {
@@ -593,6 +628,7 @@ export class TrainPage implements OnInit {
         pool_stride_x: this.inputModel.poolLayerStride,
         pool_stride_y: this.inputModel.poolLayerStride
       });
+      this.p1 = true;
     }
     else if (no == 2 &&
       this.inputModel.poolLayerSize2 != null &&
@@ -605,7 +641,8 @@ export class TrainPage implements OnInit {
         pool_stride_x: this.inputModel.poolLayerStride2,
         pool_stride_y: this.inputModel.poolLayerStride2
       });
-    }
+      this.p2 = true;
+    } else { alert("tidak boleh kosong") }
   }
   setFC() {
     if (this.inputModel.outputLayerCount != null) {
@@ -615,12 +652,10 @@ export class TrainPage implements OnInit {
         units: this.inputModel.outputLayerCount,
         activation: ACTIVATION_SOFTMAX
       });
-    }
+      this.f = true;
+    } else { alert("tidak boleh kosong") }
   }
   ngOnInit() {
-    // this.init();
-    // this.createContext()
     this.initialize_network(); // model jaringan disimpan di properti model
-
   }
 }

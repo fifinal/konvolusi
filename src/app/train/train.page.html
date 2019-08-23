@@ -6,6 +6,218 @@
 
 <ion-content>
   <ion-row>
+    <ion-col size="7">
+      <ion-card>
+        <ion-card-content>
+          <ion-card-header color="danger">
+            <ion-card-title>Input Model</ion-card-title>
+          </ion-card-header>
+          <ion-item class="layer outputLayer">
+            <span class="layerLabel">Learning Rate</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="rate">Rate : </label>
+                  <input class="outputCount" type="number" [(ngModel)]="inputModel.rate" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setRate()">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer outputLayer">
+            <span class="layerLabel">Batch Size</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="Batch">Size : </label>
+                  <input class="outputCount" type="number" [(ngModel)]="inputModel.batch" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setBatch()">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer inputLayer noDelete">
+            <span class="layerLabel">Input</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="inputLayerWidth">Width : </label>
+                  <input class="inputWidth" type="number" [(ngModel)]="inputModel.inputLayerWidth" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="inputLayerHeight">Height : </label>
+                  <input class="inputHeight" type="number" [(ngModel)]="inputModel.inputLayerHeight" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="inputLayerDepth">Depth : </label>
+                  <input class="inputDepth" type="number" [(ngModel)]="inputModel.inputLayerDepth" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setInput()">ok</ion-button>
+
+          </ion-item>
+          <ion-item class="layer convLayer">
+            <span class="layerLabel">Convolution</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="convLayerPatchSize">kernel : </label>
+                  <input class="convPatchSize" type="number" [(ngModel)]="inputModel.convLayerPatchSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerOutputs">Outputs : </label>
+                  <input class="convOutputs" type="number" [(ngModel)]="inputModel.convLayerOutputs" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setConv(1)">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer poolLayer">
+            <span class="layerLabel">MaxPool</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="poolLayerSize">Size</label>
+                  <input class="poolSize" type="number" [(ngModel)]="inputModel.poolLayerSize" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="poolLayerStride">Stride</label>
+                  <input class="poolStride" type="number" [(ngModel)]="inputModel.poolLayerStride" min="1" />
+                </span>
+              </div>
+              <div class="infoBox inputBoxesRow"></div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setMaxPool(1)">ok</ion-button>
+          </ion-item>
+
+          <ion-item class="layer convLayer">
+            <span class="layerLabel">Convolution</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="convLayerPatchSize">Kernel : </label>
+                  <input class="convPatchSize" type="number" [(ngModel)]="inputModel.convLayerPatchSize2" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="convLayerOutputs">Outputs : </label>
+                  <input class="convOutputs" type="number" [(ngModel)]="inputModel.convLayerOutputs2" min="1" />
+                </span>
+              </div>
+              <div class="inputBoxesRow infoBox"></div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setConv(2)">ok</ion-button>
+          </ion-item>
+          <ion-item class="layer poolLayer">
+            <span class="layerLabel">MaxPool</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="poolLayerSize">Size : </label>
+                  <input class="poolSize" type="number" [(ngModel)]="inputModel.poolLayerSize2" min="1" />
+                </span>
+                <span class="inputBox">
+                  <label for="poolLayerStride">Stride : </label>
+                  <input class="poolStride" type="number" [(ngModel)]="inputModel.poolLayerStride2" min="1" />
+                </span>
+              </div>
+              <div class="infoBox inputBoxesRow"></div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setMaxPool(2)">ok</ion-button>
+          </ion-item>
+
+          <ion-item class="layer fcLayer">
+            <span class="layerLabel">Fully Connected</span>
+            <div class="inputBoxes">
+              <div class="inputBoxesRow">
+                <span class="inputBox">
+                  <label for="outputLayerCount">Count : </label>
+                  <input class="outputCount" type="number" [(ngModel)]="inputModel.outputLayerCount" min="1" />
+                </span>
+              </div>
+            </div>
+            <ion-button fill="outline" color="danger" (click)="setFC()">ok</ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col size="5">
+      <ion-card>
+        <ion-card-content>
+          <ion-card-header color="success">
+            <ion-card-title>Model</ion-card-title>
+          </ion-card-header>
+          <ion-item>
+            <ion-label>
+              Learning Rate: {{inputModel.rate}}
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              Batch Size: {{inputModel.batch}}
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+
+              <h2>Input Layer</h2>
+              <div *ngIf="in">
+                <span> Width : {{inputModel.inputLayerWidth}}, </span>
+                <span> Height : {{inputModel.inputLayerHeight}}, </span>
+                <span> Depth : {{inputModel.inputLayerDepth}} </span>
+              </div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+
+              <h2>Convolution 1</h2>
+              <div *ngIf="k1">
+                <span> kernel : {{inputModel.convLayerPatchSize}}, </span>
+                <span> Output : {{inputModel.convLayerOutputs}} </span>
+              </div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+
+              <h2>Maxpooling 1</h2>
+              <div *ngIf="p1">
+                <span> Size : {{inputModel.poolLayerSize}}, </span>
+                <span> Stride : {{inputModel.poolLayerStride}} </span>
+              </div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+
+              <h2>Convolution 2</h2>
+              <div *ngIf="k2">
+                <span> kernel : {{inputModel.convLayerPatchSize2}}, </span>
+                <span> Output : {{inputModel.convLayerOutputs2}} </span>
+              </div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h2>Maxpooling 2</h2>
+              <div *ngIf="p1"> 
+                <span>Size : {{inputModel.poolLayerSize2}}</span>
+                <span>Stride : {{inputModel.poolLayerStride2}}</span>
+              </div>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <h2>Full Connected</h2>
+              <div *ngIf="f">
+                <li>Output : {{inputModel.outputLayerCount}}</li>
+              </div>
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
     <ion-col size="6">
       <ion-card>
         <ion-card-header>
@@ -157,149 +369,13 @@
         </ion-card-content>
       </ion-card>
     </ion-col>
-    <ion-col size="6">
-      <ion-card>
-        <ion-card-header color="danger">
-          <ion-card-title>Input Model</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <ion-item class="layer outputLayer">
-            <span class="layerLabel">Learning Rate</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="rate">Rate : </label>
-                  <input class="outputCount" type="number" [(ngModel)]="inputModel.rate" />
-                </span>
-              </div>
-            </div>
-            <ion-button fill="outline" color="danger" (click)="setRate()">ok</ion-button>
-          </ion-item>
-          <ion-item class="layer outputLayer">
-            <span class="layerLabel">Batch Size</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="Batch">Size : </label>
-                  <input class="outputCount" type="number" [(ngModel)]="inputModel.batch" min="1" />
-                </span>
-              </div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setBatch()">ok</ion-button>
-          </ion-item>
-          <ion-item class="layer inputLayer noDelete">
-            <span class="layerLabel">Input</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="inputLayerWidth">Width : </label>
-                  <input class="inputWidth" type="number" [(ngModel)]="inputModel.inputLayerWidth" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="inputLayerHeight">Height : </label>
-                  <input class="inputHeight" type="number" [(ngModel)]="inputModel.inputLayerHeight" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="inputLayerDepth">Depth : </label>
-                  <input class="inputDepth" type="number" [(ngModel)]="inputModel.inputLayerDepth" min="1" />
-                </span>
-              </div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setInput()">ok</ion-button>
-
-          </ion-item>
-          <ion-item class="layer convLayer">
-            <span class="layerLabel">Convolution</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="convLayerPatchSize">kernel : </label>
-                  <input class="convPatchSize" type="number" [(ngModel)]="inputModel.convLayerPatchSize" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="convLayerOutputs">Outputs : </label>
-                  <input class="convOutputs" type="number" [(ngModel)]="inputModel.convLayerOutputs" min="1" />
-                </span>
-              </div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setConv(1)">ok</ion-button>
-          </ion-item>
-          <ion-item class="layer poolLayer">
-            <span class="layerLabel">MaxPool</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="poolLayerSize">Size</label>
-                  <input class="poolSize" type="number" [(ngModel)]="inputModel.poolLayerSize" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="poolLayerStride">Stride</label>
-                  <input class="poolStride" type="number" [(ngModel)]="inputModel.poolLayerStride" min="1" />
-                </span>
-              </div>
-              <div class="infoBox inputBoxesRow"></div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setMaxPool(1)">ok</ion-button>
-          </ion-item>
-
-          <ion-item class="layer convLayer">
-            <span class="layerLabel">Convolution</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="convLayerPatchSize">Kernel : </label>
-                  <input class="convPatchSize" type="number" [(ngModel)]="inputModel.convLayerPatchSize2" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="convLayerOutputs">Outputs : </label>
-                  <input class="convOutputs" type="number" [(ngModel)]="inputModel.convLayerOutputs2" min="1" />
-                </span>
-              </div>
-              <div class="inputBoxesRow infoBox"></div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setConv(2)">ok</ion-button>
-          </ion-item>
-          <ion-item class="layer poolLayer">
-            <span class="layerLabel">MaxPool</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="poolLayerSize">Size : </label>
-                  <input class="poolSize" type="number" [(ngModel)]="inputModel.poolLayerSize2" min="1" />
-                </span>
-                <span class="inputBox">
-                  <label for="poolLayerStride">Stride : </label>
-                  <input class="poolStride" type="number" [(ngModel)]="inputModel.poolLayerStride2" min="1" />
-                </span>
-              </div>
-              <div class="infoBox inputBoxesRow"></div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setMaxPool(2)">ok</ion-button>
-          </ion-item>
-
-          <ion-item class="layer fcLayer">
-            <span class="layerLabel">Fully Connected</span>
-            <div class="inputBoxes">
-              <div class="inputBoxesRow">
-                <span class="inputBox">
-                  <label for="outputLayerCount">Count : </label>
-                  <input class="outputCount" type="number" [(ngModel)]="inputModel.outputLayerCount" min="1" />
-                </span>
-              </div>
-            </div>
-            <ion-button fill="outline" color="danger"  (click)="setFC()">ok</ion-button>
-          </ion-item>
-        </ion-card-content>
-      </ion-card>
-    </ion-col>
   </ion-row>
-
   <ion-card>
     <ion-card-content>
       <ion-item>
-          <ion-button (click)="button_click(1)" fill="solid" color="success">{{btn}}</ion-button>
-          <ion-input [(ngModel)]="nama_file_bobot"></ion-input>
-          <ion-button (click)="upload()" fill="solid" color="primary" *ngIf="jsonObject">Upload</ion-button>
+        <ion-button (click)="button_click(1)" fill="solid" color="success">{{btn}}</ion-button>
+        <ion-input [(ngModel)]="nama_file_bobot"></ion-input>
+        <ion-button (click)="upload()" fill="solid" color="primary" *ngIf="jsonObject">Upload</ion-button>
       </ion-item>
       <ion-item>
         <ion-label>
@@ -326,9 +402,16 @@
           Accuracy: {{train_accuracy}}
         </ion-label>
       </ion-item>
-
     </ion-card-content>
   </ion-card>
+  <ion-row *ngIf="example_seen>0">
+    <ion-col size="6">
+      <canvas id="akurasi"></canvas>
+    </ion-col>
+    <ion-col size="6">
+      <canvas id="loss"></canvas>
+    </ion-col>
+  </ion-row>
   <!-- <ion-select (ionChange)="checkValue($event)"  interface="popover" 
   placeholder="Select One" >
     <ion-select-option *ngFor="let c of currencyData" [value]="c"> 

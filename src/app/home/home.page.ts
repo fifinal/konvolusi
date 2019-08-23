@@ -9,7 +9,9 @@ import PureCnn from '../model/model';
 import { LAYER_CONV, LAYER_FULLY_CONNECTED } from '../util/constant';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-export interface Item { nama: string;url:string; }
+import { Storage } from '@ionic/storage';
+import ImageProcess from '../praproses/ImageProcess';
+export interface Item { nama: string; url: string; }
 // import { FileTransfer } from '@ionic-native/file-transfer';
 // import { File } from '@ionic-native/file';
 
@@ -20,7 +22,7 @@ export interface Item { nama: string;url:string; }
 })
 export class HomePage {
   @ViewChild('angularCropper') public angularCropper: CropperComponent
-  bobotSelected:string;
+  bobotSelected: string;
   cropperOptions: any;
   myphoto: any = null;
   croppedImage: string;
@@ -29,20 +31,26 @@ export class HomePage {
   model: any;
   model_test: any;
   confidence: string;
-  klas:string;
+  klas: string;
   private itemsCollection: AngularFirestoreCollection<Item>;
   items: Observable<Item[]>;
   labels: any[];
+  arrKemungkinan: any[];
+  range: number;
+  img: HTMLImageElement;
+  pixelData: ImageData;
+  ctx: CanvasRenderingContext2D;
   constructor(private afs: AngularFirestore,
-    public http:HttpClient,
+    public http: HttpClient,
     public actionSheet: ActionSheetController,
     private camera: Camera,
+    private storage: Storage
   ) {
     this.itemsCollection = afs.collection<Item>('items');
     this.items = this.itemsCollection.valueChanges();
-
-    // this.myphoto="assets/jambu.jpg";
-    this.myphoto="";
+    this.arrKemungkinan = [];
+    this.myphoto = "assets/1.png";
+    // this.myphoto="";
     this.confidence = "";
     this.model_test = 'assets/model.json';
     this.model = undefined;
@@ -103,7 +111,9 @@ export class HomePage {
     let croppedImgB64Str: any = this.angularCropper.cropper.getCroppedCanvas({ width: 226, height: 226 }).toDataURL('image/jpeg', (100 / 100));
     console.log(this.angularCropper.cropper.getImageData());
     this.croppedImage = croppedImgB64Str;
-    this.reset();
+    this.imagePredict();
+
+
   }
   reset() {
     this.angularCropper.cropper.reset();
@@ -173,45 +183,71 @@ export class HomePage {
     });
   }
   imagePredict() {
-    const img = new Image();
-    img.onload = () => {
+    this.img = new Image();
+    this.img.onload = () => {
+      let canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
+      this.ctx = canvas.getContext('2d');
+      this.ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height);
+      this.pixelData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+    };
+    this.img.src = this.croppedImage;
+  }
+  predict(){
+    this.img = new Image();
+    this.img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 100;
       canvas.height = 100;
-      let ctx = canvas.getContext('2d');
+      this.ctx = canvas.getContext('2d');
 
-      ctx.drawImage(img, 0, 0, 64, 64);
-      let pixelData = ctx.getImageData(0, 0, 64, 64);
-      console.log(pixelData);
-      console.log(this.model);
-      this.predict(pixelData);
+      this.ctx.drawImage(this.img, 0, 0, 64,64);
+      this.pixelData = this.ctx.getImageData(0,0,64,64);
+      let improc = new ImageProcess(this.pixelData);
+      improc.threshold(this.range);
+      improc.sharpen(0, this.ctx);
+      improc.contrastStretching();
+      this.p(improc.pixels);
     };
-    img.src = this.croppedImage;
+    this.img.src = this.croppedImage;
   }
-  predict(inputImageData) {
+  p(inputImageData) {
     // const inputImageData = this.getImage();
-
+    // this.imagePredict();
     if (this.model === undefined) return;
 
     const result = this.model.predict([inputImageData]);
     console.log(result);
     let guess = 0;
     let max = 0;
+    let kemiripan = [];
     for (let i = 0; i < 10; ++i) {
+      kemiripan.push({
+        data: result[0].get_value_by_coordinate(0, 0, i),
+        label: this.labels[i]
+      });
       if (result[0].get_value_by_coordinate(0, 0, i) > max) {
         max = result[0].get_value_by_coordinate(0, 0, i);
         guess = i;
       }
     }
+    kemiripan.sort((a, b) => (a["data"] < b["data"] ? -1 : 1));
+
     // this.klas = ( max > 0.866667 ) ? String(guess) : String(max);
-    this.confidence = String(Math.min(100, Math.floor(1000 * (max + 0.1)) / 10.0)) + "% adalah " + String(this.labels[guess]);
+
+    this.confidence = String(Math.min(100, Math.floor(1000 * (max)) / 10.0)) + "% dengan " + String(this.labels[guess]);
+    let akurasi1 = Math.min(100, Math.floor(1000 * kemiripan[kemiripan.length - 2].data)) / 10.0;
+    let akurasi2 = Math.min(100, Math.floor(1000 * kemiripan[kemiripan.length - 3].data)) / 10.0;
+    if (akurasi1 > 30) {
+      this.arrKemungkinan[0] = kemiripan[kemiripan.length - 2].label + " dengan akurasi " + String(akurasi1) + " %";
+      this.arrKemungkinan[1] = kemiripan[kemiripan.length - 3].label + " dengan akurasi " + String(akurasi2) + " %";
+    }
   }
 
   loadModelFromJson(model_json) {
     this.model = new PureCnn();
 
     if (model_json.momentum !== undefined) this.model.set_momentum(model_json.momentum);
-    this.labels=model_json.labels 
+    this.labels = model_json.labels
     if (model_json.l2 !== undefined) this.model.set_l2(model_json.l2);
     if (model_json.learning_rate !== undefined) this.model.set_learning_rate(model_json.learning_rate);
 
@@ -224,10 +260,10 @@ export class HomePage {
 
       switch (model_json.layers[layerIndex].type) {
         case LAYER_CONV:
-            this.model.layers[layerIndex].set_params(layerDesc.weight, layerDesc.biases);
+          this.model.layers[layerIndex].set_params(layerDesc.weight, layerDesc.biases);
           break;
         case LAYER_FULLY_CONNECTED:
-            this.model.layers[layerIndex].set_params(layerDesc.weight, layerDesc.biases);
+          this.model.layers[layerIndex].set_params(layerDesc.weight, layerDesc.biases);
           break;
         default:
           break;
@@ -237,7 +273,7 @@ export class HomePage {
 
   async readJson(model) {
     // const res = await fetch(model,{mode: 'no-cors'});
-    this.http.get(model).subscribe((data)=>{
+    this.http.get(model).subscribe((data) => {
 
       console.log(data);
       this.loadModelFromJson(data);
@@ -245,29 +281,48 @@ export class HomePage {
     // const data = await res.json();
   }
 
-  onChange(event){
+  onChange(event) {
     console.log(event);
-      try {
-        
-    this.readJson(this.bobotSelected);
-    
-  
-    //   const url = 'https://api.example.com';
-    //   const params = {};
-    //   const headers = {};
+    try {
 
-    //   const response = await this.http.get(url, params, headers);
+      this.readJson(this.bobotSelected);
 
-    //   console.log(response.status);
-    //   console.log(JSON.parse(response.data)); // JSON data returned by server
-    //   console.log(response.headers);
+
+      //   const url = 'https://api.example.com';
+      //   const params = {};
+      //   const headers = {};
+
+      //   const response = await this.http.get(url, params, headers);
+
+      //   console.log(response.status);
+      //   console.log(JSON.parse(response.data)); // JSON data returned by server
+      //   console.log(response.headers);
 
     } catch (error) {
       console.log(error);
     }
 
   }
+  changeThreshold(event) {
 
+    this.img.onload = () => {
+      let canvas = <HTMLCanvasElement>document.getElementById('myCanvas');
+      this.ctx = canvas.getContext('2d');
+
+      this.ctx.drawImage(this.img, 0, 0, canvas.width, canvas.height);
+      this.pixelData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);
+      // this.predict(pixelData);
+      let improc = new ImageProcess(this.pixelData);
+      improc.threshold(this.range);
+      improc.sharpen(0, this.ctx);
+      improc.contrastStretching();
+      this.ctx.putImageData(improc.pixels, 0, 0);
+      // this.pixelData=improc.pixels;
+    };
+    this.img.src = this.croppedImage;
+
+
+  }
   ngOnInit() {
     this.readJson(this.model_test);
   }
